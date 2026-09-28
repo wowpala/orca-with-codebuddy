@@ -16,6 +16,8 @@ An independent implementation for [stablyai/orca#9354](https://github.com/stably
 - **AI Vault session history** — CodeBuddy sessions from `~/.codebuddy/projects` show up in Orca's right-side panel: searchable, resumable (`codebuddy --resume <id>`), deletable
 - Dedicated transcript parsing (CodeBuddy's transcript format differs from Claude's; this ships its own parser)
 
+**Not included yet**: hooks — Orca isn't notified when CodeBuddy requests a permission or finishes a turn; those appear only in the terminal pane.
+
 ## Install (Windows x64)
 
 1. **Find your Orca version**: Orca → Settings → About.
@@ -34,7 +36,9 @@ Double-click `CodeBuddy-Patch.bat` and choose **[2] Restore official Orca** (run
 
 The official updater replaces `resources\` wholesale and wipes the patch. Wait for a release here tagged with the new Orca version, then repeat the install steps. Releases are built automatically whenever a `codebuddy-v<version>` tag is pushed (see the Actions tab).
 
-## Build from source
+## Build from source (optional)
+
+You never need to build to install or update the patch — releases are built automatically by CI. Build locally only when developing or debugging the patch itself:
 
 ```bash
 git clone -b wowpala/codebuddy https://github.com/wowpala/orca-with-codebuddy.git
@@ -44,11 +48,23 @@ pnpm run build:unpack
 # → dist/win-unpacked/resources/{app.asar, app.asar.unpacked/}
 ```
 
-The two paths under `dist/win-unpacked/resources/` are the same artifacts the release zips contain.
+The two paths under `dist/win-unpacked/resources/` are the same build artifacts the release zips contain (zips additionally bundle `CodeBuddy-Patch.bat` and `INSTALL.md`).
 
 ## How releases are made
 
-For maintainers: merge the upstream Orca release tag into `wowpala/codebuddy`, push, then tag `codebuddy-v<that version>` and push the tag — [GitHub Actions](.github/workflows/codebuddy-release.yml) builds `app.asar` + `app.asar.unpacked` on a Windows runner and publishes the zip to Releases.
+For maintainers. Remotes: `origin` = upstream [stablyai/orca](https://github.com/stablyai/orca), `fork` = this repo.
+
+```bash
+git fetch origin --tags                      # pick up the new upstream release tag
+git merge v<upstream-version>                # on wowpala/codebuddy; resolve conflicts if any
+git push fork wowpala/codebuddy
+git tag codebuddy-v<upstream-version>        # MUST equal the installed Orca version
+git push fork codebuddy-v<upstream-version>  # CI builds and publishes the zip
+```
+
+[GitHub Actions](.github/workflows/codebuddy-release.yml) builds `app.asar` + `app.asar.unpacked` on a Windows runner and publishes the zip to Releases — no local build involved.
+
+Re-releasing the same Orca version (patch-script fixes, no upstream change): move the existing `codebuddy-vX.Y.Z` tag to the new commit and force-push it — CI rebuilds and replaces the release assets.
 
 ## License
 
@@ -61,6 +77,8 @@ MIT, same as [Orca](https://github.com/stablyai/orca). CodeBuddy is a product of
 这是一个为 [Orca](https://github.com/stablyai/orca) 添加 [CodeBuddy CLI](https://www.codebuddy.ai/cli) 支持的**非官方补丁项目**，提供免编译的预构建补丁。
 
 **功能**：CodeBuddy 出现在 Orca 的 agent 选择器中，可在任意 worktree 启动；右侧 AI Vault 会话历史可查看、搜索、恢复（`codebuddy --resume <id>`）、删除 CodeBuddy 会话。
+
+**暂未包含**：hooks 集成——CodeBuddy 申请权限或完成对话时 Orca 不会有提示，相关交互只在终端面板里。
 
 **安装（Windows x64）**：
 

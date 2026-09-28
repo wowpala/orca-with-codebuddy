@@ -132,3 +132,20 @@ Source-control and review changes must consider GitLab and other supported git p
 ## GitHub CLI Usage
 
 Be mindful of the user's `gh` CLI API rate limit — batch requests where possible and avoid unnecessary calls. All code, commands, and scripts must be compatible with macOS, Linux, and Windows.
+
+# CodeBuddy Patch Fork
+
+Branch `wowpala/codebuddy` is the source of the [orca-with-codebuddy](https://github.com/wowpala/orca-with-codebuddy) patch releases — an unofficial distribution, not an upstream contribution. It ships `CodeBuddy-Patch.bat` plus the built `resources/app.asar` and `app.asar.unpacked` as a zip applied to an installed Orca of the **same version**. `README.md` is this fork's user guide, not Orca's.
+
+Releases: merge the upstream Orca release tag into `wowpala/codebuddy`, push, then push a `codebuddy-v<Orca version>` tag — [`.github/workflows/codebuddy-release.yml`](./.github/workflows/codebuddy-release.yml) builds on a Windows runner and publishes the zip. The tag's version MUST equal the installed Orca version the zip will be applied to.
+
+## Windows batch scripts (`CodeBuddy-Patch.bat`)
+
+Every rule below was a real failure — do not regress them:
+
+- CRLF line endings, ASCII-only content (no `chcp 65001`, no Chinese text). LF-only endings with UTF-8 multibyte content made cmd.exe mis-compute line offsets and execute path fragments (`'C' is not recognized`).
+- No raw parentheses in `echo` text inside a `( ... )` block — a bare `)` closes the block early and aborts the whole script, even when that branch is never taken.
+- Pipe through `findstr`, not `find` — a Git Bash PATH resolves GNU `find` first.
+- Backup names `app.asar.orca-official.bak` / `app.asar.unpacked.orca-official.bak` are user-visible state: first install creates them, later installs never overwrite, restore consumes them.
+- The script kills leftover `orca.exe` before install/restore (warn first — unsaved agent output may be lost) and ends every path with a keypress pause.
+- Test in a sandbox: fake `LOCALAPPDATA` pointing at a fake `Programs/orca/resources` tree, drive the menu with `printf '1\nY\n' | cmd //c script.bat`, and exercise the kill path on a sed-renamed copy against a dummy process — never against a live Orca.
