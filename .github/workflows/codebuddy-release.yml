@@ -51,6 +51,11 @@ jobs:
           native-runtime: electron
           cache-electron-package: 'true'
 
+      # mobile is a separate pnpm project: without this, mobile/node_modules is
+      # empty and build:mobile-web fails ("Could not resolve react-native-web").
+      # electron-builder's beforePack also requires out/mobile-web to exist.
+      - uses: ./.github/actions/install-mobile-dependencies
+
       - name: Build unpacked app (build:desktop + build:native + electron-builder --dir)
         shell: bash
         run: pnpm run build:unpack
