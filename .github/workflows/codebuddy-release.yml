@@ -1,0 +1,147 @@
+# Builds a drop-in CodeBuddy patch for an installed Orca: full source build
+# via electron-builder --dir, then packages resources/app.asar +
+# resources/app.asar.unpacked into a zip attached to a GitHub Release.
+#
+# Users of the release replace those two files in
+# %LOCALAPPDATA%\Programs\orca\resources\ (Windows) — no compilation needed.
+#
+# Trigger: push a tag named codebuddy-v<orca-version> (e.g. codebuddy-v1.8.0)
+# on the branch that carries the CodeBuddy commits. The tag's Orca version
+# MUST match the installed Orca version the zip will be applied to.
+
+name: Build CodeBuddy patch release
+
+on:
+  push:
+    tags:
+      - 'codebuddy-v*'
+  workflow_dispatch:
+    inputs:
+      skip_release:
+        description: 'Build only (upload workflow artifact, do not create a Release)'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: codebuddy-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows:
+    # Windows-only for now: the zip must be applied to a Windows x64 install
+    # (native modules inside app.asar.unpacked are ABI-bound to the platform).
+    runs-on: windows-latest
+    timeout-minutes: 90
+    env:
+      # No signing certificate on the fork; --dir packaging must not try to sign.
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      # Installs pnpm + Node 24, pnpm install --frozen-lockfile --ignore-scripts,
+      # then rebuilds native modules against the Electron ABI (node-pty,
+      # windows-registry, windows-process-tree) — what the beforePack guard checks.
+      - uses: ./.github/actions/install-node-dependencies
+        with:
+          native-runtime: electron
+          cache-electron-package: 'true'
+
+      - name: Build unpacked app (build:desktop + build:native + electron-builder --dir)
+        shell: bash
+        run: pnpm run build:unpack
+
+      - name: Stage patch artifacts
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $stage = 'patch-stage'
+          New-Item -ItemType Directory -Force -Path $stage | Out-Null
+          # Explicit -Destination everywhere: Copy-Item without one copies into the
+          # caller's cwd (the exact mistake that once littered a local resources\).
+          Copy-Item 'dist/win-unpacked/resources/app.asar' -Destination $stage
+          Copy-Item 'dist/win-unpacked/resources/app.asar.unpacked' -Destination "$stage/app.asar.unpacked" -Recurse
+
+      - name: Write INSTALL.md into the bundle
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          @'
+          # Orca CodeBuddy patch (unofficial)
+
+          Applies the CodeBuddy CLI agent integration to an installed Orca.
+          Built for Orca version: see the release tag (codebuddy-v<X.Y.Z> -> Orca X.Y.Z).
+          Windows x64 only.
+
+          ## Install
+
+          1. Quit Orca completely (check the tray icon).
+          2. Back up, then replace these two paths inside
+             `%LOCALAPPDATA%\Programs\orca\resources\`:
+
+             - `app.asar`                 <- overwrite with the one in this zip
+             - `app.asar.unpacked\`       <- overwrite the whole folder with this one
+
+          3. Start Orca. Verify: Settings shows a CodeBuddy agent, and the AI Vault
+             session history lists CodeBuddy sessions (from `~/.codebuddy/projects`).
+
+          ## Version matching
+
+          The Orca version in the release tag MUST equal your installed Orca
+          version. Applying a mismatched build can break IPC between the app and
+          its helper processes.
+
+          ## Rollback
+
+          Restore the two paths from your backup, or reinstall Orca. Your session
+          data in `~/.codebuddy` is never touched by any of this.
+          '@ | Out-File -FilePath 'patch-stage/INSTALL.md' -Encoding utf8
+
+      - name: Zip bundle
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $zip = "orca-codebuddy-${{ github.ref_name }}-win32-x64.zip"
+          Compress-Archive -Path 'patch-stage/*' -DestinationPath $zip -CompressionLevel Optimal
+          "ZIP=$zip" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Checksums
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $hash = (Get-FileHash -Algorithm SHA256 $env:ZIP).Hash.ToLower()
+          "$hash  $env:ZIP" | Out-File -FilePath SHA256SUMS.txt -Encoding ascii
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ZIP }}
+          path: |
+            ${{ env.ZIP }}
+            SHA256SUMS.txt
+          if-no-files-found: error
+
+      - name: Create GitHub Release
+        if: ${{ github.event_name == 'push' || inputs.skip_release != 'true' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ env.ZIP }}
+            SHA256SUMS.txt
+          fail_on_unmatched_files: true
+          body: |
+            Unofficial [CodeBuddy CLI](https://www.codebuddy.ai/cli) agent support for Orca **${{ github.ref_name }}** (Windows x64).
+
+            Drop-in patch: no build required. See `INSTALL.md` inside the zip.
+
+            1. Quit Orca (check the tray icon)
+            2. Back up, then overwrite `resources\app.asar` and `resources\app.asar.unpacked\` in `%LOCALAPPDATA%\Programs\orca\` with the ones from the zip
+            3. Start Orca — CodeBuddy appears as an agent; AI Vault lists CodeBuddy sessions
+
+            **Version matching matters**: the `X.Y.Z` in the tag must equal your installed Orca version. Verify with the included `SHA256SUMS.txt` before applying.
+
+            Source: the branch this tag points to (MIT, same as Orca). Not affiliated with stablyai or CodeBuddy.
