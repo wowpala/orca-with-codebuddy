@@ -58,6 +58,13 @@ export const getAgentCatalog = createLocalizedCatalog((): AgentCatalogEntry[] =>
     homepageUrl: 'https://code.claude.com/docs/en/agent-teams'
   },
   {
+    id: 'codebuddy',
+    label: translate('auto.lib.agent.catalog.codebuddy_label', 'CodeBuddy'),
+    cmd: 'codebuddy',
+    faviconDomain: 'codebuddy.ai',
+    homepageUrl: 'https://www.codebuddy.ai/cli'
+  },
+  {
     id: 'openclaude',
     label: translate('auto.lib.agent.catalog.a5fc0cb622', 'OpenClaude'),
     cmd: 'openclaude',

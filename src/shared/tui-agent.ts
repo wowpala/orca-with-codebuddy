@@ -3,6 +3,7 @@
 export type TuiAgent =
   | 'claude' // Claude Code
   | 'claude-agent-teams' // Claude Code Agent Teams via Orca native panes
+  | 'codebuddy' // CodeBuddy CLI (@tencent-ai/codebuddy-code) — a Claude Code-compatible CLI
   | 'openclaude' // OpenClaude
   | 'codex' // OpenAI Codex
   | 'autohand' // Autohand Code CLI

@@ -14,6 +14,8 @@ import type { TuiAgent } from './tui-agent'
 export const SKILLS_CLI_AGENT_KEY_BY_TUI_AGENT = {
   claude: 'claude-code',
   'claude-agent-teams': 'claude-code',
+  // Why: uncertain the community `skills` CLI ships a `codebuddy` key; null drops it safely.
+  codebuddy: null,
   // Why: Orca states OpenClaude reads Claude-owned roots (native-chat-agent-profiles).
   openclaude: 'claude-code',
   codex: 'codex',

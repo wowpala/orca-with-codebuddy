@@ -96,6 +96,15 @@ const TUI_AGENT_CONFIG_SOURCE: Record<TuiAgent, TuiAgentConfigSource> = {
     promptInjectionMode: 'stdin-after-start',
     pasteNeedsTypedRequest: true
   },
+  codebuddy: {
+    detectCmd: 'codebuddy',
+    // Why: `codebuddy "<prompt>"` starts the interactive REPL with the prompt
+    // as the initial turn (docs.codebuddy.ai/cli/cli-reference), so argv is the
+    // right injection mode. No `draftPromptFlag`: CodeBuddy Code exposes no
+    // `--prefill`-style flag, so the draft-launch flow must fall through to the
+    // paste-after-ready path.
+    promptInjectionMode: 'argv'
+  },
   openclaude: {
     detectCmd: 'openclaude',
     promptInjectionMode: 'argv',
