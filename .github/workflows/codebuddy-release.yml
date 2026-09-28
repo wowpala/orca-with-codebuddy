@@ -70,6 +70,8 @@ jobs:
           # caller's cwd (the exact mistake that once littered a local resources\).
           Copy-Item 'dist/win-unpacked/resources/app.asar' -Destination $stage
           Copy-Item 'dist/win-unpacked/resources/app.asar.unpacked' -Destination "$stage/app.asar.unpacked" -Recurse
+          Copy-Item '一键安装CodeBuddy补丁.bat' -Destination $stage
+          Copy-Item '一键还原官方Orca.bat' -Destination $stage
 
       - name: Write INSTALL.md into the bundle
         shell: pwsh
@@ -82,17 +84,27 @@ jobs:
           Built for Orca version: see the release tag (codebuddy-v<X.Y.Z> -> Orca X.Y.Z).
           Windows x64 only.
 
-          ## Install
+          ## Install (easiest)
 
           1. Quit Orca completely (check the tray icon).
-          2. Back up, then replace these two paths inside
-             `%LOCALAPPDATA%\Programs\orca\resources\`:
-
-             - `app.asar`                 <- overwrite with the one in this zip
-             - `app.asar.unpacked\`       <- overwrite the whole folder with this one
-
+          2. Extract this zip anywhere, then double-click `一键安装CodeBuddy补丁.bat`.
+             It detects a running Orca, backs up the official files on first run
+             (`app.asar.orca-official.bak` / `app.asar.unpacked.orca-official.bak`),
+             and copies the patch into place.
           3. Start Orca. Verify: Settings shows a CodeBuddy agent, and the AI Vault
              session history lists CodeBuddy sessions (from `~/.codebuddy/projects`).
+
+          ## Restore the official build
+
+          Double-click `一键还原官方Orca.bat` in the same folder at any time
+          (Orca must be closed).
+
+          ## Manual install (alternative)
+
+          Overwrite these two paths inside `%LOCALAPPDATA%\Programs\orca\resources\`:
+
+          - `app.asar`                 <- overwrite with the one in this zip
+          - `app.asar.unpacked\`       <- overwrite the whole folder with this one
 
           ## Version matching
 
@@ -102,8 +114,9 @@ jobs:
 
           ## Rollback
 
-          Restore the two paths from your backup, or reinstall Orca. Your session
-          data in `~/.codebuddy` is never touched by any of this.
+          Run the restore bat, or restore the two paths from your backup, or
+          reinstall Orca. Your session data in `~/.codebuddy` is never touched
+          by any of this.
           '@ | Out-File -FilePath 'patch-stage/INSTALL.md' -Encoding utf8
 
       - name: Zip bundle
