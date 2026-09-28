@@ -85,10 +85,11 @@ jobs:
 
           ## Install (easiest)
 
-          1. Quit Orca completely (check the tray icon).
-          2. Extract this zip anywhere, then double-click `CodeBuddy-Patch.bat`
-             and choose **[1] Install CodeBuddy patch**.
-             It detects a running Orca, backs up the official files on first run
+          1. Extract this zip anywhere — no need to quit Orca first.
+          2. Double-click `CodeBuddy-Patch.bat` and choose
+             **[1] Install CodeBuddy patch**.
+             It kills any running Orca processes first (unsaved agent output
+             may be lost), backs up the official files on first run
              (`app.asar.orca-official.bak` / `app.asar.unpacked.orca-official.bak`),
              and copies the patch into place.
           3. Start Orca. Verify: Settings shows a CodeBuddy agent, and the AI Vault
@@ -97,7 +98,8 @@ jobs:
           ## Restore the official build
 
           Double-click `CodeBuddy-Patch.bat` in the same folder at any time,
-          choose **[2] Restore official Orca** (Orca must be closed).
+          choose **[2] Restore official Orca** (running Orca processes are
+          killed automatically).
 
           ## Manual install (alternative)
 
@@ -156,8 +158,8 @@ jobs:
 
             Drop-in patch: no build required. See `INSTALL.md` inside the zip.
 
-            1. Quit Orca (check the tray icon)
-            2. Back up, then overwrite `resources\app.asar` and `resources\app.asar.unpacked\` in `%LOCALAPPDATA%\Programs\orca\` with the ones from the zip
+            1. Extract the zip (no need to quit Orca — the script kills running instances automatically)
+            2. Double-click `CodeBuddy-Patch.bat`, choose **[1] Install**
             3. Start Orca — CodeBuddy appears as an agent; AI Vault lists CodeBuddy sessions
 
             **Version matching matters**: the `X.Y.Z` in the tag must equal your installed Orca version. Verify with the included `SHA256SUMS.txt` before applying.

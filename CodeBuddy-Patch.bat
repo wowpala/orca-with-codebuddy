@@ -21,11 +21,17 @@ if errorlevel 2 goto restore
 goto install
 
 :check-orca-running
-rem Returns errorlevel 1 (after printing the error) when Orca is running.
+rem Kills any running orca.exe (issue #3); returns errorlevel 1 only if it survives.
 tasklist /FI "IMAGENAME eq orca.exe" 2>nul | findstr /I "orca.exe" >nul
 if errorlevel 1 exit /b 0
-echo [ERROR] Orca is running.
-echo Quit Orca completely, including the tray icon, then run this script again.
+echo [WARN] Detected running Orca processes. Killing them now.
+echo Any unsaved agent output in Orca may be lost.
+taskkill /F /IM orca.exe /T >nul 2>&1
+ping -n 3 127.0.0.1 >nul
+tasklist /FI "IMAGENAME eq orca.exe" 2>nul | findstr /I "orca.exe" >nul
+if errorlevel 1 exit /b 0
+echo [ERROR] Orca is still running after the kill attempt.
+echo Quit it manually, then run this script again.
 exit /b 1
 
 :install
