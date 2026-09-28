@@ -22,13 +22,13 @@ An independent implementation for [stablyai/orca#9354](https://github.com/stably
 2. **Download the matching release** from [Releases](https://github.com/wowpala/orca-with-codebuddy/releases): tag `codebuddy-vX.Y.Z` is built for Orca `X.Y.Z`. The versions **must match** — a mismatched build can break IPC between Orca and its helper processes.
 3. (Optional) verify the zip against `SHA256SUMS.txt`.
 4. **Quit Orca completely** (check the tray icon), then extract the zip anywhere.
-5. **One-click**: double-click `一键安装CodeBuddy补丁.bat`. It checks Orca isn't running, backs up the official files on first run (`app.asar.orca-official.bak`), and copies the patch into place.
+5. **One-click**: double-click `CodeBuddy-Patch.bat` and choose **[1] Install**. It checks Orca isn't running, backs up the official files on first run (`app.asar.orca-official.bak`), and copies the patch into place.
    *Manual alternative*: overwrite `app.asar` and replace the whole `app.asar.unpacked\` folder inside `%LOCALAPPDATA%\Programs\orca\resources\` with the ones from the zip.
 6. Start Orca. Verify: Settings lists CodeBuddy as an agent; the AI Vault lists your CodeBuddy sessions.
 
 ### Rollback
 
-Double-click `一键还原官方Orca.bat` (Orca closed). Or restore the two paths from your backup, or reinstall Orca. Nothing here touches `~/.codebuddy`, so your session history survives patch removal, reinstalls, and updates.
+Double-click `CodeBuddy-Patch.bat` (Orca closed) and choose **[2] Restore official Orca**. Or restore the two paths from your backup, or reinstall Orca. Nothing here touches `~/.codebuddy`, so your session history survives patch removal, reinstalls, and updates.
 
 ## After an Orca update
 
@@ -68,10 +68,10 @@ MIT, same as [Orca](https://github.com/stablyai/orca). CodeBuddy is a product of
 2. 到 [Releases](https://github.com/wowpala/orca-with-codebuddy/releases) 下载 **tag 版本号与 Orca 版本一致** 的 zip：`codebuddy-vX.Y.Z` 对应 Orca `X.Y.Z`。**版本必须匹配**，错配可能导致 Orca 与其子进程 IPC 不兼容
 3. （可选）用 zip 旁的 `SHA256SUMS.txt` 校验文件完整性
 4. 完全退出 Orca（注意托盘图标），然后把 zip 解压到任意目录
-5. **一键安装**：双击 `一键安装CodeBuddy补丁.bat` —— 脚本会检测 Orca 是否在运行、首次自动备份官方原版（`app.asar.orca-official.bak`），然后完成替换
+5. **一键安装**：双击 `CodeBuddy-Patch.bat` 选 **[1] Install** —— 脚本会检测 Orca 是否在运行、首次自动备份官方原版（`app.asar.orca-official.bak`），然后完成替换
    （手动方式：把 zip 里的 `app.asar` 和 `app.asar.unpacked\` 覆盖到 `%LOCALAPPDATA%\Programs\orca\resources\`，unpacked 是**整个文件夹**替换）
 6. 启动 Orca，验证：设置里有 CodeBuddy agent，右侧会话历史出现 CodeBuddy 记录
 
-**回滚**：双击 `一键还原官方Orca.bat`（需先退出 Orca），或用备份手动还原，或重装 Orca。补丁不会触碰 `~/.codebuddy`，会话记录始终安全。
+**回滚**：双击 `CodeBuddy-Patch.bat` 选 **[2] Restore official Orca**（需先退出 Orca），或用备份手动还原，或重装 Orca。补丁不会触碰 `~/.codebuddy`，会话记录始终安全。
 
 **Orca 更新后**：官方更新会整体替换 `resources\` 并冲掉补丁。等本仓库发布对应该新版本的 Release，重新执行安装步骤即可（推送 `codebuddy-v<版本>` tag 后 CI 会自动构建发布）。

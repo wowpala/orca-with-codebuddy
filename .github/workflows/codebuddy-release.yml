@@ -70,8 +70,7 @@ jobs:
           # caller's cwd (the exact mistake that once littered a local resources\).
           Copy-Item 'dist/win-unpacked/resources/app.asar' -Destination $stage
           Copy-Item 'dist/win-unpacked/resources/app.asar.unpacked' -Destination "$stage/app.asar.unpacked" -Recurse
-          Copy-Item '一键安装CodeBuddy补丁.bat' -Destination $stage
-          Copy-Item '一键还原官方Orca.bat' -Destination $stage
+          Copy-Item 'CodeBuddy-Patch.bat' -Destination $stage
 
       - name: Write INSTALL.md into the bundle
         shell: pwsh
@@ -87,7 +86,8 @@ jobs:
           ## Install (easiest)
 
           1. Quit Orca completely (check the tray icon).
-          2. Extract this zip anywhere, then double-click `一键安装CodeBuddy补丁.bat`.
+          2. Extract this zip anywhere, then double-click `CodeBuddy-Patch.bat`
+             and choose **[1] Install CodeBuddy patch**.
              It detects a running Orca, backs up the official files on first run
              (`app.asar.orca-official.bak` / `app.asar.unpacked.orca-official.bak`),
              and copies the patch into place.
@@ -96,8 +96,8 @@ jobs:
 
           ## Restore the official build
 
-          Double-click `一键还原官方Orca.bat` in the same folder at any time
-          (Orca must be closed).
+          Double-click `CodeBuddy-Patch.bat` in the same folder at any time,
+          choose **[2] Restore official Orca** (Orca must be closed).
 
           ## Manual install (alternative)
 
@@ -114,9 +114,9 @@ jobs:
 
           ## Rollback
 
-          Run the restore bat, or restore the two paths from your backup, or
-          reinstall Orca. Your session data in `~/.codebuddy` is never touched
-          by any of this.
+          Run the restore option ([2] in `CodeBuddy-Patch.bat`), or restore the
+          two paths from your backup, or reinstall Orca. Your session data in
+          `~/.codebuddy` is never touched by any of this.
           '@ | Out-File -FilePath 'patch-stage/INSTALL.md' -Encoding utf8
 
       - name: Zip bundle
