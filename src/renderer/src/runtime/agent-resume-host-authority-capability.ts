@@ -18,6 +18,10 @@ import {
 const RESUME_HOST_AUTHORITY_CAPABILITY_BY_AGENT = {
   // These shipped inside agent-session.host-authority.v1's enum, so the generic probe covers them.
   claude: undefined,
+  // Ungated: only a host whose vault scanner knows codebuddy (newer than the
+  // enum) can hand the renderer a codebuddy provider session, so an older host
+  // is never asked to launch one.
+  codebuddy: undefined,
   codex: undefined,
   gemini: undefined,
   antigravity: undefined,

@@ -16,6 +16,7 @@ import {
   parseOpenCodeSqliteSessionViaWorker
 } from './session-scanner-opencode-sqlite-worker-spawn'
 import { parseClaudeSessionFile } from './session-scanner-primary-parsers'
+import { parseCodebuddySessionFile } from './session-scanner-codebuddy-parser'
 import { parseGeminiSessionFile } from './session-scanner-gemini-parsers'
 import { parseCodexSessionFile } from './session-scanner-codex-parser'
 import { parseCopilotSessionFile } from './session-scanner-copilot-parser'
@@ -83,6 +84,8 @@ export async function parseAgentSessionFile(
   switch (candidate.agent) {
     case 'claude':
       return parseClaudeSessionFile(candidate.file, platform, messages)
+    case 'codebuddy':
+      return parseCodebuddySessionFile(candidate.file, platform, messages)
     case 'codex':
       return parseCodexSessionFile(
         candidate.file,
