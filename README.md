@@ -13,10 +13,9 @@ An independent implementation for [stablyai/orca#9354](https://github.com/stably
 ## What you get
 
 - **CodeBuddy as a built-in agent** — appears in the agent picker, launchable in any worktree, with the usual permission controls
+- **Agent status hooks** — Orca tracks CodeBuddy's live state (working / waiting for permission / done) in the sidebar, with an in-flight tool preview. Hooks are installed automatically into `~/.codebuddy/settings.json` on first launch when the CLI is detected (your own hooks are preserved), and on SSH execution hosts as well
 - **AI Vault session history** — CodeBuddy sessions from `~/.codebuddy/projects` show up in Orca's right-side panel: searchable, resumable (`codebuddy --resume <id>`), deletable
 - Dedicated transcript parsing (CodeBuddy's transcript format differs from Claude's; this ships its own parser)
-
-**Not included yet**: hooks — Orca isn't notified when CodeBuddy requests a permission or finishes a turn; those appear only in the terminal pane.
 
 ## Install (Windows x64)
 
@@ -76,9 +75,7 @@ MIT, same as [Orca](https://github.com/stablyai/orca). CodeBuddy is a product of
 
 这是一个为 [Orca](https://github.com/stablyai/orca) 添加 [CodeBuddy CLI](https://www.codebuddy.ai/cli) 支持的**非官方补丁项目**，提供免编译的预构建补丁。
 
-**功能**：CodeBuddy 出现在 Orca 的 agent 选择器中，可在任意 worktree 启动；右侧 AI Vault 会话历史可查看、搜索、恢复（`codebuddy --resume <id>`）、删除 CodeBuddy 会话。
-
-**暂未包含**：hooks 集成——CodeBuddy 申请权限或完成对话时 Orca 不会有提示，相关交互只在终端面板里。
+**功能**：CodeBuddy 出现在 Orca 的 agent 选择器中，可在任意 worktree 启动；**Agent 状态 hooks** —— Orca 在侧边栏实时显示 CodeBuddy 状态（工作中 / 等待权限 / 完成）和当前执行的工具，检测到 CLI 后首次启动会自动把 hooks 写入 `~/.codebuddy/settings.json`（保留你自己的 hooks），SSH 执行主机同样支持；右侧 AI Vault 会话历史可查看、搜索、恢复（`codebuddy --resume <id>`）、删除 CodeBuddy 会话。
 
 **安装（Windows x64）**：
 
