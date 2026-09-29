@@ -39,6 +39,9 @@ export function isNewTurnEvent(source: AgentHookSource, eventName: unknown): boo
       // Why: matches Codex/Claude — SessionStart lands an idle boundary row and drops stale
       // tool/prompt caches, while UserPromptSubmit is the actual turn boundary.
       return eventName === 'SessionStart' || eventName === 'UserPromptSubmit'
+    case 'codebuddy':
+      // Why: CodeBuddy emits Claude-compatible lifecycle events, so its boundaries match ZCode's.
+      return eventName === 'SessionStart' || eventName === 'UserPromptSubmit'
     case 'codex':
       return eventName === 'SessionStart' || eventName === 'UserPromptSubmit'
     case 'gemini':
@@ -144,6 +147,9 @@ export function extractToolFields(
     // Why: ZCode's hook runner writes Claude's `tool_name`/`tool_input`/`tool_response` aliases.
     // falls through
     case 'zcode':
+    // Why: CodeBuddy's hooks deliver Claude's stdin shape verbatim.
+    // falls through
+    case 'codebuddy':
       return extractClaudeToolFields(eventName, hookPayload)
     case 'codex':
       return extractCodexToolFields(eventName, hookPayload)

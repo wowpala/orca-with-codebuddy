@@ -209,7 +209,10 @@ export function extractAgentProviderSession(
     }
     // Why: ZCode's `transcript_path` is a per-invocation temp file it deletes when the hook
     // returns (`createCompatibleHookStdin` mkdtemp + cleanup), so only the id is durable.
-    case 'zcode': {
+    case 'zcode':
+    // Why: CodeBuddy posts a Claude-shaped `session_id`; transcript durability is unverified, so only the id is trusted.
+    // falls through
+    case 'codebuddy': {
       const id = readSessionId(payload, ['session_id'])
       return id ? { key: 'session_id', id } : null
     }

@@ -24,6 +24,10 @@ import { getGrokManagedCommand } from '../grok/grok-hook-script'
 import { getMuseManagedCommand, getMuseRemoteManagedCommand } from '../muse/hook-settings'
 import { getZCodeManagedCommand, getZCodeRemoteManagedCommand } from '../zcode/hook-settings'
 import {
+  getCodeBuddyManagedCommand,
+  getCodeBuddyRemoteManagedCommand
+} from '../codebuddy/hook-settings'
+import {
   wrapPosixHookCommand,
   wrapWindowsCmdHookCommand,
   wrapWindowsHookCommand
@@ -156,6 +160,14 @@ const buildersByAgent = new Map<string, CommandBuilders>([
     {
       local: (path) => [getZCodeManagedCommand(path)],
       remote: (path) => [getZCodeRemoteManagedCommand(path)]
+    }
+  ],
+  [
+    'codebuddy',
+    {
+      // Why: the launcher is self-contained (wrapRuntimeHomeHookCommand), so the script path input is unused.
+      local: () => [getCodeBuddyManagedCommand()],
+      remote: () => [getCodeBuddyRemoteManagedCommand()]
     }
   ]
 ])
