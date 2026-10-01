@@ -8,8 +8,12 @@
 # Trigger: push a tag named codebuddy-v<orca-version> (e.g. codebuddy-v1.8.0)
 # on the branch that carries the CodeBuddy commits. The tag's Orca version
 # MUST match the installed Orca version the zip will be applied to.
+#
+# DISABLED: official Orca v1.4.218+ ships built-in CodeBuddy CLI support
+# (agent picker, status hooks, AI Vault history). This fork is retired — the
+# job below is gated with `if: false` so no release is built or published.
 
-name: Build CodeBuddy patch release
+name: Build CodeBuddy patch release (RETIRED)
 
 on:
   push:
@@ -31,6 +35,9 @@ concurrency:
 
 jobs:
   build-windows:
+    # Disabled: this fork is retired now that official Orca v1.4.218+ has
+    # built-in CodeBuddy support. Kept for reference only.
+    if: false
     # Windows-only for now: the zip must be applied to a Windows x64 install
     # (native modules inside app.asar.unpacked are ABI-bound to the platform).
     runs-on: windows-latest

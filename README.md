@@ -1,4 +1,9 @@
-<h1 align="center">Orca + CodeBuddy <sub>(unofficial patch)</sub></h1>
+> [!IMPORTANT]
+> **This project is retired (2026-10-01).** Official [Orca](https://github.com/stablyai/orca) **v1.4.218+** now ships built-in [CodeBuddy CLI](https://www.codebuddy.ai/cli) support — agent picker, status hooks, and AI Vault session history. Install a current Orca instead; this patch is no longer maintained and its release workflow is disabled.
+>
+> 本项目已停止维护。官方 Orca v1.4.218 起已内置 CodeBuddy 支持，请直接使用官方版本。
+
+<h1 align="center">Orca + CodeBuddy <sub>(unofficial patch — retired)</sub></h1>
 
 <p align="center">
   <a href="https://github.com/wowpala/orca-with-codebuddy/releases">Releases</a> · <img src="https://img.shields.io/badge/license-MIT-08C?style=flat" alt="License: MIT" /> · <img src="https://img.shields.io/badge/platform-Windows%20x64-4493F8?style=flat-square" alt="Windows x64" />
@@ -6,7 +11,7 @@
 
 Drop-in [CodeBuddy CLI](https://www.codebuddy.ai/cli) agent support for [Orca](https://github.com/stablyai/orca), distributed as **prebuilt patches — no compilation needed**.
 
-An independent implementation for [stablyai/orca#9354](https://github.com/stablyai/orca/issues/9354). Not affiliated with stablyai or CodeBuddy. If official support lands upstream, this project retires.
+An independent implementation for [stablyai/orca#9354](https://github.com/stablyai/orca/issues/9354). Not affiliated with stablyai or CodeBuddy. **Official support landed in Orca v1.4.218 — this project is now retired (see banner above).**
 
 简体中文说明见[文末](#简体中文说明)。
 
@@ -54,11 +59,23 @@ The two paths under `dist/win-unpacked/resources/` are the same build artifacts 
 For maintainers. Remotes: `origin` = upstream [stablyai/orca](https://github.com/stablyai/orca), `fork` = this repo.
 
 ```bash
+# Bash / Git Bash:
 git fetch origin --tags                      # pick up the new upstream release tag
-git merge v<upstream-version>                # on wowpala/codebuddy; resolve conflicts if any
+TAG=$(git tag -l 'v*' --sort=-v:refname | head -n 1)
+git merge "$TAG"                             # on wowpala/codebuddy; resolve conflicts if any
 git push fork wowpala/codebuddy
-git tag codebuddy-v<upstream-version>        # MUST equal the installed Orca version
-git push fork codebuddy-v<upstream-version>  # CI builds and publishes the zip
+git tag "codebuddy-$TAG"                     # MUST equal the installed Orca version
+git push fork "codebuddy-$TAG"               # CI builds and publishes the zip
+```
+
+```powershell
+# PowerShell:
+git fetch origin --tags                      # pick up the new upstream release tag
+$TAG = (git tag -l 'v*' --sort=-v:refname)[0]
+git merge $TAG                               # on wowpala/codebuddy; resolve conflicts if any
+git push fork wowpala/codebuddy
+git tag "codebuddy-$TAG"                     # MUST equal the installed Orca version
+git push fork "codebuddy-$TAG"               # CI builds and publishes the zip
 ```
 
 [GitHub Actions](.github/workflows/codebuddy-release.yml) builds `app.asar` + `app.asar.unpacked` on a Windows runner and publishes the zip to Releases — no local build involved.
